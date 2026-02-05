@@ -99,7 +99,7 @@ class AMCSimulator:
         self.mcs_table = get_mcs_table(self.config.mcs_table_name)
         
         # 设置BLER模型参数
-        self.bler_model.set_params_from_mcs_table(self.mcs_table, target_bler=0.1)
+        self.bler_model.set_params_from_mcs_table(self.mcs_table, target_bler=self.config.target_bler)
         
         # 设置吞吐量计算器
         self.throughput_calc.set_bandwidth(self.config.bandwidth_mhz)
@@ -181,15 +181,14 @@ class AMCSimulator:
                     throughput[i] = tp
                 else:
                     throughput[i] = self.config.bandwidth_mhz * se
+
+            # bandwidth_mhz * bits/s/Hz -> Mbps 数值上等价
             
             eval_result['throughput_mbps'] = throughput
             self.result.strategy_results[name] = eval_result
             
-            # 保存门限
-            self.result.thresholds[name] = self.threshold_searcher.search_all_thresholds(
-                self.mcs_table, self.bler_model,
-                strategy.target_bler, strategy.margin_db
-            )
+            # 保存门限（复用策略内部已计算结果，避免重复搜索和不一致）
+            self.result.thresholds[name] = strategy.get_threshold_results()
         
         # HARQ分析
         if self.config.enable_harq:
