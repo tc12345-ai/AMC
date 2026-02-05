@@ -7,6 +7,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
+import copy
 
 
 @dataclass
@@ -61,9 +62,12 @@ class AMCStrategy(ABC):
             threshold_searcher: 门限搜索器（可选）
         """
         self.mcs_table = mcs_table
-        self.bler_model = bler_model
-        
+
+        # 为每个策略创建独立BLER模型副本，避免策略间参数互相覆盖
+        self.bler_model = copy.deepcopy(bler_model)
+
         # 初始化BLER模型参数
+        self.bler_model.set_params_from_mcs_table(mcs_table, target_bler=self.target_bler)
         bler_model.set_params_from_mcs_table(mcs_table, target_bler=self.target_bler)
         
         # 计算门限
