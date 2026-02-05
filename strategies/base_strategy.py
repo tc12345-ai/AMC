@@ -68,6 +68,7 @@ class AMCStrategy(ABC):
 
         # 初始化BLER模型参数
         self.bler_model.set_params_from_mcs_table(mcs_table, target_bler=self.target_bler)
+        bler_model.set_params_from_mcs_table(mcs_table, target_bler=self.target_bler)
         
         # 计算门限
         self._calculate_thresholds(threshold_searcher)
