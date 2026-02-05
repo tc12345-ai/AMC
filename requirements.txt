@@ -1,0 +1,6 @@
+numpy>=1.21.0
+matplotlib>=3.5.0
+# PyQt6>=6.4.0 (推荐) 或 PyQt5>=5.15.0
+# matplotlib>=3.5.0
+# numpy>=1.21.0
+# scipy>=1.7.0
