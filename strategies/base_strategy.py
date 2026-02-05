@@ -36,6 +36,7 @@ class AMCStrategy(ABC):
         self.mcs_table = None
         self.bler_model = None
         self.thresholds: Dict[int, float] = {}
+        self.threshold_results = []
         self._sorted_mcs: List[Tuple[float, int]] = []
     
     @property
@@ -63,7 +64,7 @@ class AMCStrategy(ABC):
         self.bler_model = bler_model
         
         # 初始化BLER模型参数
-        bler_model.set_params_from_mcs_table(mcs_table, target_bler=0.1)
+        bler_model.set_params_from_mcs_table(mcs_table, target_bler=self.target_bler)
         
         # 计算门限
         self._calculate_thresholds(threshold_searcher)
@@ -87,6 +88,7 @@ class AMCStrategy(ABC):
             self.margin_db
         )
         
+        self.threshold_results = results
         self.thresholds = {r.mcs_index: r.snr_threshold for r in results}
     
     def _build_sorted_mcs(self):
@@ -112,6 +114,10 @@ class AMCStrategy(ABC):
     def get_thresholds(self) -> Dict[int, float]:
         """获取所有MCS的切换门限"""
         return dict(self.thresholds)
+
+    def get_threshold_results(self):
+        """获取包含调制方式/BLER等元数据的完整门限结果"""
+        return list(self.threshold_results)
     
     def get_spectral_efficiency(self, mcs_index: int) -> float:
         """获取MCS的频谱效率"""
